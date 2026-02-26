@@ -15,11 +15,11 @@ impl State {
 
     pub fn next_state(
         &self,
-        id: char,
+        id: &char,
         block: &Vec<Vec<char>>,
         position: (usize, usize),
     ) -> Option<State> {
-        let block_used = id as u8 - 'A' as u8;
+        let block_used = *id as u8 - 'A' as u8;
 
         if self.block_used & (1 << block_used) != 0 {
             return None;
@@ -39,20 +39,17 @@ impl State {
     }
 
     pub fn is_finish_state(&self, totalBlocks: u8) -> bool {
-        //There will be at least 1 block
-        self.block_used & (1 << (totalBlocks - 1)) != 0
+        for b in 0..totalBlocks {
+            if (1 << b) & self.block_used == 0 {
+                return false;
+            }
+        }
+        return true;
     }
 
-    pub fn get_next_block_to_place(&self) -> u8 {
-        let mut check_number = 1u16;
-        let mut block_index = 0u8;
-
-        while self.block_used & check_number != 0 {
-            block_index += 1;
-            check_number <<= 1;
-        }
-        
-        block_index
+    pub fn is_block_used(&self, id: &char) -> bool {
+        let block_used = *id as u8 - 'A' as u8;
+        self.block_used & (1 << (block_used)) != 0
     }
 
     pub fn get_board(&self) -> &Board {
