@@ -141,7 +141,7 @@ impl Board {
         })
     }
 
-    pub fn get_board(&self) -> &Vec<Vec<char>>{
+    pub fn get_contents(&self) -> &Vec<Vec<char>>{
         &self.state
     }
 }
