@@ -2,7 +2,6 @@ use crate::components::board::Board;
 
 pub struct State {
     block_used: u16,
-    block_left: u8,
     current_board: Board,
 }
 
@@ -10,7 +9,6 @@ impl State {
     pub fn new(block_count: u8, board: Board) -> State {
         State {
             block_used: 0,
-            block_left: block_count,
             current_board: board,
         }
     }
@@ -21,19 +19,31 @@ impl State {
         block: &Vec<Vec<char>>,
         position: (usize, usize),
     ) -> Option<State> {
+        let block_used = id as u8 - 'A' as u8;
+
+        if self.block_used & (1 << (15 - block_used)) != 0 {
+            return None;
+        }
+
         let board_next_state = self.current_board.place_block(block, position);
         if board_next_state.is_none() {
             return None;
         }
 
-        let bit_to_change = id as u8 - 'A' as u8;
-        let block_used_next_state = self.block_used | (1 << (15 - bit_to_change));
-        let new_block_left = self.block_left - 1;
+        let block_used_next_state = self.block_used | (1 << (15 - block_used));
 
         Some(State {
             block_used: block_used_next_state,
-            block_left: new_block_left,
             current_board: board_next_state.unwrap(),
         })
+    }
+
+    pub fn is_finish_state(&self, totalBlocks: u8) -> bool {
+        //There will be at least 1 block
+        self.block_used & (1 << (16 - totalBlocks)) != 0
+    }
+
+    pub fn get_board(&self) -> &Board{
+        &self.current_board
     }
 }

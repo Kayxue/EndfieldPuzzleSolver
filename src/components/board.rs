@@ -140,4 +140,8 @@ impl Board {
             state: placed_board,
         })
     }
+
+    pub fn get_board(&self) -> &Vec<Vec<char>>{
+        &self.state
+    }
 }
