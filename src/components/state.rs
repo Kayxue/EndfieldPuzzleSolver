@@ -21,7 +21,7 @@ impl State {
     ) -> Option<State> {
         let block_used = id as u8 - 'A' as u8;
 
-        if self.block_used & (1 << (15 - block_used)) != 0 {
+        if self.block_used & (1 << block_used) != 0 {
             return None;
         }
 
@@ -30,7 +30,7 @@ impl State {
             return None;
         }
 
-        let block_used_next_state = self.block_used | (1 << (15 - block_used));
+        let block_used_next_state = self.block_used | (1 << block_used);
 
         Some(State {
             block_used: block_used_next_state,
@@ -40,10 +40,22 @@ impl State {
 
     pub fn is_finish_state(&self, totalBlocks: u8) -> bool {
         //There will be at least 1 block
-        self.block_used & (1 << (16 - totalBlocks)) != 0
+        self.block_used & (1 << (totalBlocks - 1)) != 0
     }
 
-    pub fn get_board(&self) -> &Board{
+    pub fn get_next_block_to_place(&self) -> u8 {
+        let mut check_number = 1u16;
+        let mut block_index = 0u8;
+
+        while self.block_used & check_number != 0 {
+            block_index += 1;
+            check_number <<= 1;
+        }
+        
+        block_index
+    }
+
+    pub fn get_board(&self) -> &Board {
         &self.current_board
     }
 }
