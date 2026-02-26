@@ -14,9 +14,10 @@ impl Block {
             return Err(InvalidBlockError::new());
         }
 
-        if let Some(_) = rows
+        if rows
             .iter()
             .find(|e| e.chars().any(|c| c != '.' && c != '0') || e.is_empty() || !e.contains('0'))
+            .is_some()
         {
             return Err(InvalidBlockError::new());
         }
