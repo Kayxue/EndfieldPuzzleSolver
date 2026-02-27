@@ -199,7 +199,7 @@ Puzzle solver for solving Originium Circuitry puzzles in Arknights: Endfield gam
 > ```
 
 ```
-3 5 5 5 3
+4 5 3 2 1
 ```
 
 > ```
@@ -207,7 +207,7 @@ Puzzle solver for solving Originium Circuitry puzzles in Arknights: Endfield gam
 > ```
 
 ```
-3 5 5 5 3
+4 5 3 2 1
 ```
 
 > ```
