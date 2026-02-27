@@ -122,6 +122,7 @@ fn main() {
         return;
     }
 
+    println!("----------------");
     for (i, solution) in solver.get_solution_states().iter().enumerate() {
         println!("Solution {}", i + 1);
         for r in solution.get_board().get_contents() {
