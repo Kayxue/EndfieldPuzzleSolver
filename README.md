@@ -1,9 +1,6 @@
 # EndfieldPuzzleSolver
 Puzzle solver for solving Originium Circuitry puzzles in Arknights: Endfield game.
 
-> [!NOTE]
-> If you want to download the release version, please wait until the GitHub Actions workflow finishes.
-
 ## Example Usage
 
 > [!NOTE]
