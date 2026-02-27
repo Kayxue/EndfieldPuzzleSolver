@@ -32,6 +32,10 @@ impl Solver {
     }
 
     pub fn solve(&self) {
+        if !self.solvable() {
+            return;
+        }
+
         let mut state = self.states.borrow_mut();
         let mut solution_states = self.solutions.borrow_mut();
         let mut already_visited: HashSet<State> = HashSet::new();
@@ -78,6 +82,28 @@ impl Solver {
 
             already_visited.insert(cur_state);
         }
+    }
+
+    fn solvable(&self) -> bool {
+        let state = self.states.borrow();
+        let first_state_board_content = state[0].get_board().get_contents();
+        let block_pixel_total: u8 = self
+            .blocks
+            .iter()
+            .map(|e| e.get_filled_pixels_count())
+            .sum();
+        let board_empty_pixels_total: u8 = first_state_board_content
+            .iter()
+            .map(|r| {
+                r.iter().fold(0, |acc, c| {
+                    if *c == '.' {
+                        return acc + 1;
+                    }
+                    acc
+                })
+            })
+            .sum();
+        block_pixel_total <= board_empty_pixels_total
     }
 
     pub fn get_solution_states(&self) -> Ref<'_, HashSet<State>> {
