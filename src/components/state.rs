@@ -1,12 +1,13 @@
 use crate::components::board::Board;
 
+#[derive(Debug, Hash, PartialEq, Eq)]
 pub struct State {
     block_used: u16,
     current_board: Board,
 }
 
 impl State {
-    pub fn new(block_count: u8, board: Board) -> State {
+    pub fn new(board: Board) -> State {
         State {
             block_used: 0,
             current_board: board,
@@ -25,7 +26,7 @@ impl State {
             return None;
         }
 
-        let board_next_state = self.current_board.place_block(block, position);
+        let board_next_state = self.current_board.place_block(id, block, position);
         if board_next_state.is_none() {
             return None;
         }
@@ -38,13 +39,13 @@ impl State {
         })
     }
 
-    pub fn is_finish_state(&self, totalBlocks: u8) -> bool {
-        for b in 0..totalBlocks {
+    pub fn is_finish_state(&self, total_blocks: u8) -> bool {
+        for b in 0..total_blocks {
             if (1 << b) & self.block_used == 0 {
                 return false;
             }
         }
-        return true;
+        true
     }
 
     pub fn is_block_used(&self, id: &char) -> bool {

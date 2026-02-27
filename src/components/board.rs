@@ -7,6 +7,7 @@ use crate::components::error::{InvalidBoardError, InvalidNumbersError};
 static SPLIT_REGEX: LazyLock<Regex> =
     LazyLock::new(|| Regex::new(r"\s+").expect("Regex create failed"));
 
+#[derive(Debug, Hash, PartialEq, Eq)]
 pub struct Board {
     row_nums: Vec<u8>,
     column_nums: Vec<u8>,
@@ -14,7 +15,7 @@ pub struct Board {
 }
 
 impl Board {
-    pub fn parse_board(rows: Vec<String>) -> Result<Vec<Vec<char>>, InvalidBoardError> {
+    pub fn parse_board(rows: &Vec<String>) -> Result<Vec<Vec<char>>, InvalidBoardError> {
         if rows.is_empty() {
             return Err(InvalidBoardError::new());
         }
@@ -47,7 +48,7 @@ impl Board {
 
     pub fn parse_row_nums(
         row_nums_string: String,
-        rows: Vec<String>,
+        rows: &Vec<String>,
     ) -> Result<Vec<u8>, InvalidNumbersError> {
         let row_nums_parse_result: Result<Vec<u8>, _> = SPLIT_REGEX
             .split(&row_nums_string)
@@ -69,7 +70,7 @@ impl Board {
 
     pub fn parse_column_nums(
         column_nums_string: String,
-        rows: Vec<String>,
+        rows: &Vec<String>,
     ) -> Result<Vec<u8>, InvalidNumbersError> {
         let column_nums_parse_result: Result<Vec<u8>, _> = SPLIT_REGEX
             .split(&column_nums_string)
@@ -97,12 +98,15 @@ impl Board {
         }
     }
 
-    pub fn place_block(&self, block: &Vec<Vec<char>>, (r_fill, c_fill): (usize, usize)) -> Option<Board> {
+    pub fn place_block(
+        &self,
+        id: &char,
+        block: &Vec<Vec<char>>,
+        (r_fill, c_fill): (usize, usize),
+    ) -> Option<Board> {
         let mut placed_board = self.state.clone();
         let mut new_row_nums = self.row_nums.clone();
         let mut new_column_nums = self.column_nums.clone();
-        let row_length = placed_board.len();
-        let column_length = placed_board[0].len();
 
         //Find new state
         for (r_index, row) in block.iter().enumerate() {
@@ -110,26 +114,25 @@ impl Board {
                 let to_fill_row = r_fill + r_index;
                 let to_fill_column = c_fill + c_index;
 
-                //If index out of bound
-                if to_fill_row >= row_length || to_fill_column >= column_length {
-                    return None;
-                }
-
                 //If any pixel has been occupied
                 if placed_board[to_fill_row][to_fill_column] != '.' && *c != '.' {
                     return None;
                 }
 
-                //If courrent pixel of the block to fill can be fill
-                if *c != '.' && new_row_nums[to_fill_row] > 0 && new_column_nums[to_fill_column] > 0
+                //If specific row/column have no pixels can be fill
+                if *c != '.'
+                    && (new_row_nums[to_fill_row] <= 0 || new_column_nums[to_fill_column] <= 0)
                 {
-                    placed_board[to_fill_row][to_fill_column] = *c;
+                    return None;
+                }
+
+                //If courrent pixel of the block can be fill
+                if *c != '.' {
+                    placed_board[to_fill_row][to_fill_column] = *id;
 
                     //Change row_nums and column_nums
                     new_row_nums[to_fill_row] -= 1;
                     new_column_nums[to_fill_column] -= 1;
-                } else {
-                    return None;
                 }
             }
         }
@@ -141,7 +144,15 @@ impl Board {
         })
     }
 
-    pub fn get_contents(&self) -> &Vec<Vec<char>>{
+    pub fn get_contents(&self) -> &Vec<Vec<char>> {
         &self.state
+    }
+
+    pub fn get_width(&self) -> u8 {
+        self.column_nums.len() as u8
+    }
+
+    pub fn get_height(&self) -> u8 {
+        self.row_nums.len() as u8
     }
 }
