@@ -1,0 +1,106 @@
+name: Build and Release
+
+on:
+  push:
+    tags:
+      - "v*.*.*" # Triggers workflow on tags starting with 'v' (e.g., v1.0.0)
+
+# Requires write permissions to create a GitHub Release
+permissions:
+  contents: write
+
+jobs:
+  build:
+    name: Build ${{ matrix.target }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: ubuntu-latest
+            target: x86_64-unknown-linux-gnu
+            arch: x86_64-linux
+            os_type: linux
+          - os: ubuntu-24.04-arm
+            target: aarch64-unknown-linux-gnu
+            arch: aarch64-linux
+            os_type: linux
+          - os: windows-latest
+            target: x86_64-pc-windows-msvc
+            arch: x86_64-windows
+            os_type: windows
+          - os: windows-11-arm
+            target: aarch64-pc-windows-msvc
+            arch: aarch64-windows
+            os_type: windows
+          - os: macos-latest
+            target: x86_64-apple-darwin
+            arch: x86_64-macos
+            os_type: macos
+          - os: macos-latest
+            target: aarch64-apple-darwin
+            arch: aarch64-macos
+            os_type: macos
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install Rust toolchain
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: ${{ matrix.target }}
+
+      - name: Build release binary
+        run: cargo build --release --target ${{ matrix.target }}
+
+      - name: Package binary
+        shell: bash
+        run: |
+          # Note: If your Cargo.toml package name differs from your repository name,
+          # replace ${{ github.event.repository.name }} with your actual binary name.
+          REPO_NAME="${{ github.event.repository.name }}"
+          DIR_NAME="${REPO_NAME}_${{ matrix.arch }}"
+
+          mkdir "$DIR_NAME"
+
+          # Handle Windows `.exe` extension and compression separately
+          if [ "${{ matrix.os_type }}" = "windows" ]; then
+            mv target/${{ matrix.target }}/release/${REPO_NAME}.exe "$DIR_NAME/"
+            7z a "${DIR_NAME}.zip" "$DIR_NAME"
+            echo "ASSET=${DIR_NAME}.zip" >> $GITHUB_ENV
+          else
+            mv target/${{ matrix.target }}/release/${REPO_NAME} "$DIR_NAME/"
+            tar -czvf "${DIR_NAME}.tar.gz" "$DIR_NAME"
+            echo "ASSET=${DIR_NAME}.tar.gz" >> $GITHUB_ENV
+          fi
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.arch }}-archive
+          path: ${{ env.ASSET }}
+
+  release:
+    name: Create GitHub Release
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download all artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: artifacts
+          # merge-multiple puts all downloaded files into the 'artifacts' directory
+          # without creating deeply nested folders based on artifact names.
+          merge-multiple: true
+
+      - name: Create Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ github.ref_name }}
+          name: Release ${{ github.ref_name }}
+          draft: false
+          prerelease: false
+          files: artifacts/*
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
