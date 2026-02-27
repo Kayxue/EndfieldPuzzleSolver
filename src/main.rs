@@ -21,7 +21,7 @@ fn main() {
     let mut board_matrix_parse_result: Option<Vec<Vec<char>>> = None;
     'in_brd: while board_matrix_parse_result.is_none() {
         let mut row_strings: Vec<String> = Vec::new();
-        println!("Please input board content:");
+        println!("Please enter the board content:");
         loop {
             let row_input = input_iter.next().unwrap();
             if row_input.is_empty() {
