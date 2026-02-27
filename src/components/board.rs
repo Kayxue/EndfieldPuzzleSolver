@@ -91,9 +91,20 @@ impl Board {
     }
 
     pub fn new(row_nums: Vec<u8>, column_nums: Vec<u8>, state: Vec<Vec<char>>) -> Board {
+        let mut actual_row_numbers = row_nums;
+        let mut actual_column_numbers = column_nums;
+        for (r_index, row) in state.iter().enumerate() {
+            for (c_index, c) in row.iter().enumerate() {
+                if *c == '0' {
+                    actual_row_numbers[r_index] -= 1;
+                    actual_column_numbers[c_index] -= 1;
+                }
+            }
+        }
+
         Board {
-            row_nums,
-            column_nums,
+            row_nums: actual_row_numbers,
+            column_nums: actual_column_numbers,
             state,
         }
     }
@@ -154,5 +165,13 @@ impl Board {
 
     pub fn get_height(&self) -> u8 {
         self.row_nums.len() as u8
+    }
+
+    pub fn is_row_all_zero(&self) -> bool {
+        self.row_nums.iter().all(|e| *e == 0)
+    }
+
+    pub fn is_column_all_zero(&self) -> bool {
+        self.column_nums.iter().all(|e| *e == 0)
     }
 }

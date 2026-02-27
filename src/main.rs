@@ -115,6 +115,13 @@ fn main() {
 
     solver.solve();
 
+    let result=solver.get_solution_states();
+
+    if result.is_empty(){
+        println!("There is no solution for this puzzle");
+        return;
+    }
+
     for (i, solution) in solver.get_solution_states().iter().enumerate() {
         println!("Solution {}", i + 1);
         for r in solution.get_board().get_contents() {

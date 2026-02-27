@@ -45,7 +45,7 @@ impl State {
                 return false;
             }
         }
-        true
+        self.current_board.is_row_all_zero() && self.current_board.is_column_all_zero()
     }
 
     pub fn is_block_used(&self, id: &char) -> bool {
