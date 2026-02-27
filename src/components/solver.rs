@@ -53,10 +53,10 @@ impl Solver {
             }
 
             for block_instance in &self.blocks {
+                if cur_state.is_block_used(block_instance.get_id()) {
+                    continue;
+                }
                 for block_state in block_instance.get_block_rotate_state() {
-                    if cur_state.is_block_used(block_instance.get_id()) {
-                        break;
-                    }
                     for r_index in 0..self.board_size.0 {
                         if r_index + (block_state.len() - 1) as u8 >= self.board_size.0 {
                             break;
