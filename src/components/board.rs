@@ -48,7 +48,7 @@ impl Board {
 
     pub fn parse_row_nums(
         row_nums_string: String,
-        rows: &Vec<String>,
+        rows: &Vec<Vec<char>>,
     ) -> Result<Vec<u8>, InvalidNumbersError> {
         let row_nums_parse_result: Result<Vec<u8>, _> = SPLIT_REGEX
             .split(&row_nums_string)
@@ -70,7 +70,7 @@ impl Board {
 
     pub fn parse_column_nums(
         column_nums_string: String,
-        rows: &Vec<String>,
+        rows: &Vec<Vec<char>>,
     ) -> Result<Vec<u8>, InvalidNumbersError> {
         let column_nums_parse_result: Result<Vec<u8>, _> = SPLIT_REGEX
             .split(&column_nums_string)

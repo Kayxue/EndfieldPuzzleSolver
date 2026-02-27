@@ -1,5 +1,5 @@
 # EndfieldPuzzleSolver
-Puzzle solver for solving Originium Circuitry problem in Arknight: Endfield game. Inspired by [Myitian/OriginiumCircuitryPuzzleSolver](https://github.com/Myitian/OriginiumCircuitryPuzzleSolver)
+Puzzle solver for solving Originium Circuitry problem in Arknight: Endfield game.
 
 > [!NOTE]
 > If you want to download the release version, please wait until GitHub Actions workflow is finished.
@@ -7,10 +7,9 @@ Puzzle solver for solving Originium Circuitry problem in Arknight: Endfield game
 ## Example Usage
 
 > [!NOTE]
-> These example usage inputs are from [Myitian/OriginiumCircuitryPuzzleSolver](Myitian/OriginiumCircuitryPuzzleSolver), because I have already solve most of the puzzle by hand, I can't take screenshot anymore.
+> These example usage inputs are copied from [Myitian/OriginiumCircuitryPuzzleSolver](https://github.com/Myitian/OriginiumCircuitryPuzzleSolver), because I have already solve most of the puzzle by hand, I can't take screenshot for example anymore.
 
 ### Example 1
-## Example-1
 
 ![Game screen of the example-1](Example-1.png)
 
