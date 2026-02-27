@@ -246,7 +246,7 @@ Puzzle solver for solving Originium Circuitry problems in Arknights: Endfield ga
 
 ```
 00
-0.
+0
 
 ```
 
