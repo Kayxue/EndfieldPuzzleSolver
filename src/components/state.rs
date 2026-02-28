@@ -1,4 +1,4 @@
-use crate::components::board::Board;
+use crate::{components::board::Board, types::BlockContent};
 
 #[derive(Debug, Hash, PartialEq, Eq)]
 pub struct State {
@@ -17,7 +17,7 @@ impl State {
     pub fn next_state(
         &self,
         id: &char,
-        block: &Vec<Vec<char>>,
+        block: &BlockContent,
         position: (usize, usize),
     ) -> Option<State> {
         let block_used = *id as u8 - 'A' as u8;

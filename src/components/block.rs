@@ -1,16 +1,19 @@
 use std::{collections::HashSet, iter};
 
-use crate::components::error::InvalidBlockError;
+use crate::{
+    components::error::InvalidBlockError,
+    types::{BlockContent, StringInputs},
+};
 
 #[derive(Debug)]
 pub struct Block {
     id: char,
-    pixels: HashSet<Vec<Vec<char>>>,
+    pixels: HashSet<BlockContent>,
     filled_pixels_count: u8,
 }
 
 impl Block {
-    pub fn new(id: char, rows: Vec<String>) -> Result<Block, InvalidBlockError> {
+    pub fn new(id: char, rows: StringInputs) -> Result<Block, InvalidBlockError> {
         if rows.is_empty() {
             return Err(InvalidBlockError::new());
         }
@@ -31,7 +34,7 @@ impl Block {
             acc
         }) + 1;
 
-        let mut pixels: Vec<Vec<char>> = rows
+        let mut pixels: BlockContent = rows
             .into_iter()
             .map(|s| {
                 s.chars()
@@ -47,7 +50,7 @@ impl Block {
             .map(|v| v.iter().filter(|e| **e == '0').count())
             .sum::<usize>() as u8;
 
-        let mut all_state: HashSet<Vec<Vec<char>>> = HashSet::new();
+        let mut all_state: HashSet<BlockContent> = HashSet::new();
 
         for _ in 0..4 {
             all_state.insert(pixels.clone());
@@ -61,7 +64,7 @@ impl Block {
         })
     }
 
-    fn get_rotate_result(matrix: Vec<Vec<char>>) -> Vec<Vec<char>> {
+    fn get_rotate_result(matrix: BlockContent) -> BlockContent {
         let new_row_length = matrix[0].len();
 
         (0..new_row_length)
@@ -71,12 +74,12 @@ impl Block {
                     .iter()
                     .rev() // Read rows in reverse (bottom to top)
                     .map(|row| row[col_index]) // Pluck out the character for this column
-                    .collect::<Vec<char>>()
+                    .collect()
             })
             .collect()
     }
 
-    pub fn get_block_rotate_state(&self) -> &HashSet<Vec<Vec<char>>> {
+    pub fn get_block_rotate_state(&self) -> &HashSet<BlockContent> {
         &self.pixels
     }
 

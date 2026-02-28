@@ -1,11 +1,17 @@
-use std::{io::stdin};
+use std::io::stdin;
 
 #[cfg(target_os = "windows")]
 use std::process::Command;
 
-use crate::components::{block::Block, board::Board, solver::Solver};
+use smallvec::SmallVec;
+
+use crate::{
+    components::{block::Block, board::Board, solver::Solver},
+    types::{BlockVec, BoardContent, RequirementNums, StringInputs},
+};
 
 mod components;
+mod types;
 
 fn main() {
     let mut input_iter = stdin().lines().map(|line| line.unwrap().trim().to_string());
@@ -21,9 +27,9 @@ fn main() {
     println!();
     println!(". - Empty\n* - Unavailable\n0 - Occupied");
 
-    let mut board_matrix_parse_result: Option<Vec<Vec<char>>> = None;
+    let mut board_matrix_parse_result: Option<BoardContent> = None;
     'in_brd: while board_matrix_parse_result.is_none() {
-        let mut row_strings: Vec<String> = Vec::new();
+        let mut row_strings: StringInputs = SmallVec::new();
         println!("Please enter the board content:");
         loop {
             let row_input = input_iter.next().unwrap();
@@ -47,7 +53,7 @@ fn main() {
 
     let board_matrix = board_matrix_parse_result.unwrap();
 
-    let mut column_parse_result: Option<Vec<u8>> = None;
+    let mut column_parse_result: Option<RequirementNums> = None;
     while column_parse_result.is_none() {
         println!("Please input column requirements:");
         let column_input = input_iter.next().unwrap();
@@ -65,7 +71,7 @@ fn main() {
     }
     let parsed_column = column_parse_result.unwrap();
 
-    let mut row_parse_result: Option<Vec<u8>> = None;
+    let mut row_parse_result: Option<RequirementNums> = None;
     while row_parse_result.is_none() {
         println!("Please input row requirements:");
         let row_input = input_iter.next().unwrap();
@@ -85,10 +91,10 @@ fn main() {
 
     let board = Board::new(parsed_row, parsed_column, board_matrix);
 
-    let mut parsed_blocks: Vec<Block> = Vec::new();
+    let mut parsed_blocks: BlockVec = SmallVec::new();
     let mut cur_id = 'A' as u8;
     'in_blk: loop {
-        let mut row_strings: Vec<String> = Vec::new();
+        let mut row_strings: StringInputs = SmallVec::new();
         println!("Please input pixels for block {}:", cur_id as char);
         loop {
             let row_input = input_iter.next().unwrap();

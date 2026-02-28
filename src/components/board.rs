@@ -2,20 +2,23 @@ use std::sync::LazyLock;
 
 use regex::Regex;
 
-use crate::components::error::{InvalidBoardError, InvalidNumbersError};
+use crate::{
+    components::error::{InvalidBoardError, InvalidNumbersError},
+    types::{BlockContent, BoardContent, RequirementNums, StringInputs},
+};
 
 static SPLIT_REGEX: LazyLock<Regex> =
     LazyLock::new(|| Regex::new(r"\s+").expect("Regex create failed"));
 
-#[derive(Debug, Hash, PartialEq, Eq, Clone)]
+#[derive(Debug, Hash, PartialEq, Eq)]
 pub struct Board {
-    row_nums: Vec<u8>,
-    column_nums: Vec<u8>,
-    state: Vec<Vec<char>>,
+    row_nums: RequirementNums,
+    column_nums: RequirementNums,
+    content: BoardContent,
 }
 
 impl Board {
-    pub fn parse_board(rows: &Vec<String>) -> Result<Vec<Vec<char>>, InvalidBoardError> {
+    pub fn parse_board(rows: &StringInputs) -> Result<BoardContent, InvalidBoardError> {
         if rows.is_empty() {
             return Err(InvalidBoardError::new());
         }
@@ -48,9 +51,9 @@ impl Board {
 
     pub fn parse_row_nums(
         row_nums_string: String,
-        rows: &Vec<Vec<char>>,
-    ) -> Result<Vec<u8>, InvalidNumbersError> {
-        let row_nums_parse_result: Result<Vec<u8>, _> = SPLIT_REGEX
+        rows: &BoardContent,
+    ) -> Result<RequirementNums, InvalidNumbersError> {
+        let row_nums_parse_result: Result<RequirementNums, _> = SPLIT_REGEX
             .split(&row_nums_string)
             .map(|e| e.parse())
             .collect();
@@ -80,9 +83,9 @@ impl Board {
 
     pub fn parse_column_nums(
         column_nums_string: String,
-        rows: &Vec<Vec<char>>,
-    ) -> Result<Vec<u8>, InvalidNumbersError> {
-        let column_nums_parse_result: Result<Vec<u8>, _> = SPLIT_REGEX
+        rows: &BoardContent,
+    ) -> Result<RequirementNums, InvalidNumbersError> {
+        let column_nums_parse_result: Result<RequirementNums, _> = SPLIT_REGEX
             .split(&column_nums_string)
             .map(|e| e.parse())
             .collect();
@@ -114,7 +117,11 @@ impl Board {
         Ok(actual_column_nums)
     }
 
-    pub fn new(row_nums: Vec<u8>, column_nums: Vec<u8>, state: Vec<Vec<char>>) -> Board {
+    pub fn new(
+        row_nums: RequirementNums,
+        column_nums: RequirementNums,
+        state: BoardContent,
+    ) -> Board {
         let mut actual_row_numbers = row_nums;
         let mut actual_column_numbers = column_nums;
         for (r_index, row) in state.iter().enumerate() {
@@ -129,14 +136,14 @@ impl Board {
         Board {
             row_nums: actual_row_numbers,
             column_nums: actual_column_numbers,
-            state,
+            content: state,
         }
     }
 
     pub fn place_block(
         &self,
         id: &char,
-        block: &Vec<Vec<char>>,
+        block: &BlockContent,
         (r_fill, c_fill): (usize, usize),
     ) -> Option<Board> {
         let mut new_row_nums = self.row_nums.clone();
@@ -153,7 +160,7 @@ impl Board {
                 let to_fill_column = c_fill + c_index;
 
                 //If any pixel has been occupied
-                if self.state[to_fill_row][to_fill_column] != '.' {
+                if self.content[to_fill_row][to_fill_column] != '.' {
                     return None;
                 }
 
@@ -168,7 +175,7 @@ impl Board {
             }
         }
 
-        let mut placed_board = self.state.clone();
+        let mut placed_board = self.content.clone();
 
         // Place the block
         for (r_index, row) in block.iter().enumerate() {
@@ -182,12 +189,12 @@ impl Board {
         Some(Board {
             row_nums: new_row_nums,
             column_nums: new_column_nums,
-            state: placed_board,
+            content: placed_board,
         })
     }
 
-    pub fn get_contents(&self) -> &Vec<Vec<char>> {
-        &self.state
+    pub fn get_contents(&self) -> &BoardContent {
+        &self.content
     }
 
     pub fn get_width(&self) -> u8 {

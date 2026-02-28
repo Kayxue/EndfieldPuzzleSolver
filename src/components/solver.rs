@@ -3,22 +3,27 @@ use std::{
     collections::{HashSet, VecDeque},
 };
 
-use crate::components::{block::Block, board::Board, state::State};
+use smallvec::SmallVec;
+
+use crate::{
+    components::{board::Board, state::State},
+    types::BlockVec,
+};
 
 #[derive(Debug)]
 pub struct Solver {
-    blocks: Vec<Block>,
+    blocks: BlockVec,
     states: RefCell<VecDeque<State>>,
     solutions: RefCell<HashSet<State>>,
     board_size: (u8, u8),
 }
 
 impl Solver {
-    pub fn new(blocks: Vec<Block>, initial_board: Board) -> Solver {
+    pub fn new(blocks: BlockVec, initial_board: Board) -> Solver {
         let board_size = (initial_board.get_height(), initial_board.get_width());
         let initial_state = State::new(initial_board);
         let initial_states = VecDeque::from([initial_state]);
-        let mut blocks_sorted = Vec::from(blocks);
+        let mut blocks_sorted = SmallVec::from(blocks);
         blocks_sorted.sort_by(|a, b| {
             b.get_filled_pixels_count()
                 .cmp(&a.get_filled_pixels_count())
