@@ -7,7 +7,7 @@ use crate::components::error::{InvalidBoardError, InvalidNumbersError};
 static SPLIT_REGEX: LazyLock<Regex> =
     LazyLock::new(|| Regex::new(r"\s+").expect("Regex create failed"));
 
-#[derive(Debug, Hash, PartialEq, Eq)]
+#[derive(Debug, Hash, PartialEq, Eq, Clone)]
 pub struct Board {
     row_nums: Vec<u8>,
     column_nums: Vec<u8>,
@@ -65,6 +65,16 @@ impl Board {
             return Err(InvalidNumbersError::new());
         }
 
+        if actual_row_nums.iter().enumerate().any(|(index, row_num)| {
+            rows[index]
+                .iter()
+                .filter(|e| **e == '.' || **e == '0')
+                .count()
+                < (*row_num as usize)
+        }) {
+            return Err(InvalidNumbersError::new());
+        }
+
         Ok(actual_row_nums)
     }
 
@@ -84,6 +94,20 @@ impl Board {
         let actual_column_nums = column_nums_parse_result.unwrap();
 
         if actual_column_nums.len() != rows[0].len() {
+            return Err(InvalidNumbersError::new());
+        }
+
+        if actual_column_nums
+            .iter()
+            .enumerate()
+            .any(|(c_index, c_num)| {
+                rows.iter()
+                    .map(|e| e[c_index])
+                    .filter(|e| *e == '.' || *e == '0')
+                    .count()
+                    < (*c_num as usize)
+            })
+        {
             return Err(InvalidNumbersError::new());
         }
 

@@ -44,8 +44,8 @@ impl Block {
 
         let filled_pixel_total = pixels
             .iter()
-            .fold(0, |acc, v| acc + v.iter().filter(|e| **e == '0').count())
-            as u8;
+            .map(|v| v.iter().filter(|e| **e == '0').count())
+            .sum::<usize>() as u8;
 
         let mut all_state: HashSet<Vec<Vec<char>>> = HashSet::new();
 
