@@ -1,6 +1,7 @@
 use std::io::stdin;
 
 use crate::components::{block::Block, board::Board, solver::Solver};
+#[cfg(target_os = "windows")]
 use press_btn_continue;
 
 mod components;
