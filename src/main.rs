@@ -1,6 +1,7 @@
 use std::io::stdin;
 
 use crate::components::{block::Block, board::Board, solver::Solver};
+use press_btn_continue;
 
 mod components;
 
@@ -115,9 +116,9 @@ fn main() {
 
     solver.solve();
 
-    let result=solver.get_solution_states();
+    let result = solver.get_solution_states();
 
-    if result.is_empty(){
+    if result.is_empty() {
         println!("There is no solution for this puzzle");
         return;
     }
@@ -130,4 +131,7 @@ fn main() {
         }
         println!("----------------");
     }
+
+    #[cfg(target_os = "windows")]
+    press_btn_continue::wait("Press any key to continue...").unwrap();
 }
