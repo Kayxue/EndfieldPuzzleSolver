@@ -1,8 +1,6 @@
-use std::io::stdin;
+use std::{io::stdin, process::Command};
 
 use crate::components::{block::Block, board::Board, solver::Solver};
-#[cfg(target_os = "windows")]
-use press_btn_continue;
 
 mod components;
 
@@ -134,5 +132,5 @@ fn main() {
     }
 
     #[cfg(target_os = "windows")]
-    press_btn_continue::wait("Press any key to continue...").unwrap();
+    Command::new("cmd.exe").arg("/c").arg("pause").status().ok();
 }
