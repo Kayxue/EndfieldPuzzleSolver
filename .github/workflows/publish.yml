@@ -51,7 +51,14 @@ jobs:
         with:
           targets: ${{ matrix.target }}
 
-      - name: Build release binary
+      - name: Build release binary (Windows - Static CRT)
+        if: matrix.os_type == 'windows'
+        run: cargo build --release --target ${{ matrix.target }}
+        env:
+          RUSTFLAGS: "-C target-feature=+crt-static"
+
+      - name: Build release binary (Linux / macOS)
+        if: matrix.os_type != 'windows'
         run: cargo build --release --target ${{ matrix.target }}
 
       - name: Package binary
