@@ -8,7 +8,7 @@ use crate::components::{block::Block, board::Board, state::State};
 #[derive(Debug)]
 pub struct Solver {
     blocks: Vec<Block>,
-    initial_board: Board,
+    states: RefCell<VecDeque<State>>,
     solutions: RefCell<HashSet<State>>,
     board_size: (u8, u8),
 }
@@ -16,6 +16,8 @@ pub struct Solver {
 impl Solver {
     pub fn new(blocks: Vec<Block>, initial_board: Board) -> Solver {
         let board_size = (initial_board.get_height(), initial_board.get_width());
+        let initial_state = State::new(initial_board);
+        let initial_states = VecDeque::from([initial_state]);
         let mut blocks_sorted = Vec::from(blocks);
         blocks_sorted.sort_by(|a, b| {
             b.get_filled_pixels_count()
@@ -23,7 +25,7 @@ impl Solver {
         });
         Solver {
             blocks: blocks_sorted,
-            initial_board,
+            states: RefCell::from(initial_states),
             solutions: RefCell::from(HashSet::new()),
             board_size,
         }
@@ -34,11 +36,9 @@ impl Solver {
             return;
         }
 
-        let mut state = VecDeque::new();
+        let mut state = self.states.borrow_mut();
         let mut solution_states = self.solutions.borrow_mut();
         let mut already_visited: HashSet<State> = HashSet::new();
-
-        state.push_back(State::new(self.initial_board.clone()));
 
         while !state.is_empty() {
             let cur_state = state.pop_front().unwrap();
@@ -85,7 +85,8 @@ impl Solver {
     }
 
     fn solvable(&self) -> bool {
-        let first_state_board_content = self.initial_board.get_contents();
+        let state = self.states.borrow();
+        let first_state_board_content = state.front().unwrap().get_board().get_contents();
         let block_pixel_total: u8 = self
             .blocks
             .iter()

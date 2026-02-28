@@ -139,35 +139,42 @@ impl Board {
         block: &Vec<Vec<char>>,
         (r_fill, c_fill): (usize, usize),
     ) -> Option<Board> {
-        let mut placed_board = self.state.clone();
         let mut new_row_nums = self.row_nums.clone();
         let mut new_column_nums = self.column_nums.clone();
 
-        //Find new state
+        // Check whether new block can be place, also calculate new row/col nums
         for (r_index, row) in block.iter().enumerate() {
             for (c_index, c) in row.iter().enumerate() {
+                if *c == '.' {
+                    continue;
+                }
+
                 let to_fill_row = r_fill + r_index;
                 let to_fill_column = c_fill + c_index;
 
                 //If any pixel has been occupied
-                if placed_board[to_fill_row][to_fill_column] != '.' && *c != '.' {
+                if self.state[to_fill_row][to_fill_column] != '.' {
                     return None;
                 }
 
                 //If specific row/column have no pixels can be fill
-                if *c != '.'
-                    && (new_row_nums[to_fill_row] <= 0 || new_column_nums[to_fill_column] <= 0)
-                {
+                if new_row_nums[to_fill_row] <= 0 || new_column_nums[to_fill_column] <= 0 {
                     return None;
                 }
 
-                //If courrent pixel of the block can be fill
-                if *c != '.' {
-                    placed_board[to_fill_row][to_fill_column] = *id;
+                //Change row_nums and column_nums
+                new_row_nums[to_fill_row] -= 1;
+                new_column_nums[to_fill_column] -= 1;
+            }
+        }
 
-                    //Change row_nums and column_nums
-                    new_row_nums[to_fill_row] -= 1;
-                    new_column_nums[to_fill_column] -= 1;
+        let mut placed_board = self.state.clone();
+
+        // Place the block
+        for (r_index, row) in block.iter().enumerate() {
+            for (c_index, c) in row.iter().enumerate() {
+                if *c != '.' {
+                    placed_board[r_fill + r_index][c_fill + c_index] = *id;
                 }
             }
         }

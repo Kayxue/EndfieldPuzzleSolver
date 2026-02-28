@@ -1,4 +1,7 @@
-use std::{io::stdin, process::Command};
+use std::{io::stdin};
+
+#[cfg(target_os = "windows")]
+use std::process::Command;
 
 use crate::components::{block::Block, board::Board, solver::Solver};
 
