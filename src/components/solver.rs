@@ -8,7 +8,7 @@ use crate::components::{block::Block, board::Board, state::State};
 #[derive(Debug)]
 pub struct Solver {
     blocks: Vec<Block>,
-    board: Board,
+    initial_board: Board,
     solutions: RefCell<HashSet<State>>,
     board_size: (u8, u8),
 }
@@ -23,7 +23,7 @@ impl Solver {
         });
         Solver {
             blocks: blocks_sorted,
-            board: initial_board,
+            initial_board,
             solutions: RefCell::from(HashSet::new()),
             board_size,
         }
@@ -38,7 +38,7 @@ impl Solver {
         let mut solution_states = self.solutions.borrow_mut();
         let mut already_visited: HashSet<State> = HashSet::new();
 
-        state.push_back(State::new(self.board.clone()));
+        state.push_back(State::new(self.initial_board.clone()));
 
         while !state.is_empty() {
             let cur_state = state.pop_front().unwrap();
@@ -85,7 +85,7 @@ impl Solver {
     }
 
     fn solvable(&self) -> bool {
-        let first_state_board_content = self.board.get_contents();
+        let first_state_board_content = self.initial_board.get_contents();
         let block_pixel_total: u8 = self
             .blocks
             .iter()
