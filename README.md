@@ -11,7 +11,7 @@ Puzzle solver for solving Originium Circuitry puzzles in Arknights: Endfield gam
 ![Game screen of the example-1](Example-1.png)
 
 > ```
-> Grid:
+> Board Format:
 >   1 2 3 4 - column requirements
 > 1 . . . .
 > 2 . . . .
@@ -22,7 +22,7 @@ Puzzle solver for solving Originium Circuitry puzzles in Arknights: Endfield gam
 >
 > . - Empty
 > * - Unavailable
-> 0 - Occupied
+> 0~9 - Occupied with color
 > Please enter the board content:
 > ```
 
@@ -36,7 +36,7 @@ Puzzle solver for solving Originium Circuitry puzzles in Arknights: Endfield gam
 ```
 
 > ```
-> Set the column requirements:
+> Please input column requirements for color 0:
 > ```
 
 ```
@@ -44,11 +44,19 @@ Puzzle solver for solving Originium Circuitry puzzles in Arknights: Endfield gam
 ```
 
 > ```
-> Set the row requirements:
+> Please input row requirements for color 0:
 > ```
 
 ```
 3 5 5 5 3
+```
+
+> ```
+> Please input row requirements for color 1:
+> ```
+
+```
+
 ```
 
 > ```
@@ -104,6 +112,7 @@ Puzzle solver for solving Originium Circuitry puzzles in Arknights: Endfield gam
 ```
 
 > ```
+> ----------------
 > Solution 1
 > .DDC.
 > DDCCC
@@ -167,7 +176,7 @@ Puzzle solver for solving Originium Circuitry puzzles in Arknights: Endfield gam
 ![Game screen of the example-2](Example-2.png)
 
 > ```
-> Grid:
+> Board Format:
 >   1 2 3 4 - column requirements
 > 1 . . . .
 > 2 . . . .
@@ -178,7 +187,7 @@ Puzzle solver for solving Originium Circuitry puzzles in Arknights: Endfield gam
 >
 > . - Empty
 > * - Unavailable
-> 0 - Occupied
+> 0~9 - Occupied with color
 > Please enter the board content:
 > ```
 
@@ -192,7 +201,7 @@ Puzzle solver for solving Originium Circuitry puzzles in Arknights: Endfield gam
 ```
 
 > ```
-> Set the column requirements:
+> Please input column requirements for color 0:
 > ```
 
 ```
@@ -200,11 +209,19 @@ Puzzle solver for solving Originium Circuitry puzzles in Arknights: Endfield gam
 ```
 
 > ```
-> Set the row requirements:
+> Please input row requirements for color 0:
 > ```
 
 ```
 4 5 3 2 1
+```
+
+> ```
+> Please input column requirements for color 1:
+> ```
+
+```
+
 ```
 
 > ```
@@ -256,6 +273,7 @@ Puzzle solver for solving Originium Circuitry puzzles in Arknights: Endfield gam
 ```
 
 > ```
+> ----------------
 > Solution 1
 > AAAC.
 > ABCCC
@@ -283,6 +301,167 @@ Puzzle solver for solving Originium Circuitry puzzles in Arknights: Endfield gam
 > CCC..
 > DD.*.
 > .D..*
+> ----------------
+> ```
+
+### Example 3
+
+![Game screen of the example-3](Example-3.png)
+
+> ```
+> Board Format:
+>   1 2 3 4 - column requirements
+> 1 . . . .
+> 2 . . . .
+> 3 . . . .
+> 4 . . . .
+>  \
+>   row requirements
+>
+> . - Empty
+> * - Unavailable
+> 0~9 - Occupied with color
+> Please enter the board content:
+> ```
+
+```
+.....
+.....
+.....
+*...*
+.....
+.....
+.....
+
+```
+
+> ```
+> Please input column requirements for color 0:
+> ```
+
+```
+2 1 4 1 2
+```
+
+> ```
+> Please input row requirements for color 0:
+> ```
+
+```
+0 0 0 1 1 3 5
+```
+
+> ```
+> Please input column requirements for color 1:
+> ```
+
+```
+3 3 3 3 3
+```
+
+> ```
+> Please input row requirements for color 1:
+> ```
+
+```
+3 5 5 2 0 0 0
+```
+
+> ```
+> Please input column requirements for color 2:
+> ```
+
+```
+
+```
+
+> ```
+> Please input pixels for block A:
+> ```
+
+```
+1
+11
+1
+11
+
+```
+
+> ```
+> Please input pixels for block B:
+> ```
+
+```
+00
+0
+
+```
+
+> ```
+> Please input pixels for block C:
+> ```
+
+```
+00
+0
+
+```
+
+> ```
+> Please input pixels for block D:
+> ```
+
+```
+1.1
+111
+
+```
+
+> ```
+> Please input pixels for block E:
+> ```
+
+```
+.1
+111
+
+```
+
+> ```
+> Please input pixels for block F:
+> ```
+
+```
+0000
+
+```
+
+> ```
+> Please input pixels for block G:
+> ```
+
+```
+
+```
+
+> ```
+> ----------------
+> Solution 1
+> E.D.D
+> EEDDD
+> EAAAA
+> *AFA*
+> ..F..
+> C.F.B
+> CCFBB
+> ----------------
+> Solution 2
+> E.D.D
+> EEDDD
+> EAAAA
+> *AFA*
+> ..F..
+> B.F.C
 > ----------------
 > ```
 
