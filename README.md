@@ -462,6 +462,7 @@ Puzzle solver for solving Originium Circuitry puzzles in Arknights: Endfield gam
 > *AFA*
 > ..F..
 > B.F.C
+> BBFCC
 > ----------------
 > ```
 
