@@ -7,7 +7,7 @@ use smallvec::SmallVec;
 
 use crate::{
     components::{block::Block, board::Board, solver::Solver},
-    types::{BlockVec, BoardContent, RequirementNums, StringInputs},
+    types::{BlockVec, BoardContent, RequirementNums, RequirementNumsAllColors, StringInputs},
 };
 
 mod components;
@@ -25,7 +25,7 @@ fn main() {
     println!(" \\");
     println!("  row requirements");
     println!();
-    println!(". - Empty\n* - Unavailable\n0 - Occupied");
+    println!(". - Empty\n* - Unavailable\n0~9 - Occupied with color");
 
     let mut board_matrix_parse_result: Option<BoardContent> = None;
     'in_brd: while board_matrix_parse_result.is_none() {
@@ -53,43 +53,67 @@ fn main() {
 
     let board_matrix = board_matrix_parse_result.unwrap();
 
-    let mut column_parse_result: Option<RequirementNums> = None;
-    while column_parse_result.is_none() {
-        println!("Please input column requirements:");
-        let column_input = input_iter.next().unwrap();
-        if column_input.is_empty() {
-            continue;
+    let mut parse_board_result: Option<Board> = None;
+    while parse_board_result.is_none() {
+        let mut color_id = 0u8;
+        let mut row_nums: RequirementNumsAllColors = SmallVec::new();
+        let mut column_nums: RequirementNumsAllColors = SmallVec::new();
+        'input_requirements: loop {
+            let mut column_parse_result: Option<RequirementNums> = None;
+            while column_parse_result.is_none() {
+                println!("Please input column requirements for color {}:", color_id);
+                let column_input = input_iter.next().unwrap();
+                if column_input.is_empty() {
+                    if row_nums.len() <= 0 {
+                        continue;
+                    }
+                    break 'input_requirements;
+                }
+                match Board::parse_column_nums(&color_id, column_input, &board_matrix) {
+                    Ok(result) => {
+                        column_parse_result.replace(result);
+                    }
+                    Err(err) => {
+                        println!("{}", err)
+                    }
+                }
+            }
+            let parsed_column = column_parse_result.unwrap();
+
+            let mut row_parse_result: Option<RequirementNums> = None;
+            while row_parse_result.is_none() {
+                println!("Please input row requirements for color {}:", color_id);
+                let row_input = input_iter.next().unwrap();
+                if row_input.is_empty() {
+                    continue;
+                }
+                match Board::parse_row_nums(&color_id, row_input, &board_matrix) {
+                    Ok(result) => {
+                        row_parse_result.replace(result);
+                    }
+                    Err(err) => {
+                        println!("{}", err)
+                    }
+                }
+            }
+            let parsed_row = row_parse_result.unwrap();
+
+            column_nums.push(parsed_column);
+            row_nums.push(parsed_row);
+            color_id += 1
         }
-        match Board::parse_column_nums(column_input, &board_matrix) {
+        match Board::new(row_nums, column_nums, &board_matrix) {
             Ok(result) => {
-                column_parse_result.replace(result);
+                parse_board_result.replace(result);
+                break;
             }
             Err(err) => {
-                println!("{}", err)
+                println!("{}", err);
             }
         }
     }
-    let parsed_column = column_parse_result.unwrap();
 
-    let mut row_parse_result: Option<RequirementNums> = None;
-    while row_parse_result.is_none() {
-        println!("Please input row requirements:");
-        let row_input = input_iter.next().unwrap();
-        if row_input.is_empty() {
-            continue;
-        }
-        match Board::parse_row_nums(row_input, &board_matrix) {
-            Ok(result) => {
-                row_parse_result.replace(result);
-            }
-            Err(err) => {
-                println!("{}", err)
-            }
-        }
-    }
-    let parsed_row = row_parse_result.unwrap();
-
-    let board = Board::new(parsed_row, parsed_column, board_matrix);
+    let board = parse_board_result.unwrap();
 
     let mut parsed_blocks: BlockVec = SmallVec::new();
     let mut cur_id = 'A' as u8;

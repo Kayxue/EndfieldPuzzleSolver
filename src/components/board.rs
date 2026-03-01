@@ -4,7 +4,7 @@ use regex::Regex;
 
 use crate::{
     components::error::{InvalidBoardError, InvalidNumbersError},
-    types::{BlockContent, BoardContent, RequirementNums, StringInputs},
+    types::{BlockContent, BoardContent, RequirementNums, RequirementNumsAllColors, StringInputs},
 };
 
 static SPLIT_REGEX: LazyLock<Regex> =
@@ -12,8 +12,8 @@ static SPLIT_REGEX: LazyLock<Regex> =
 
 #[derive(Debug, Hash, PartialEq, Eq)]
 pub struct Board {
-    row_nums: RequirementNums,
-    column_nums: RequirementNums,
+    row_nums: RequirementNumsAllColors,
+    column_nums: RequirementNumsAllColors,
     content: BoardContent,
 }
 
@@ -23,14 +23,16 @@ impl Board {
             return Err(InvalidBoardError::new());
         }
 
+        // Check input has invalid character
         if rows
             .iter()
-            .find(|e| e.chars().any(|c| c != '.' && c != '0' && c != '*') || e.is_empty())
+            .find(|e| e.chars().any(|c| c != '.' && !c.is_digit(10) && c != '*') || e.is_empty())
             .is_some()
         {
             return Err(InvalidBoardError::new());
         }
 
+        // Check whether input is a matrix
         if let (_, true) = rows.iter().fold((0u8, false), |acc, e| {
             let (cur_length, _) = acc;
             if cur_length == 0 {
@@ -50,6 +52,7 @@ impl Board {
     }
 
     pub fn parse_row_nums(
+        color: &u8,
         row_nums_string: String,
         rows: &BoardContent,
     ) -> Result<RequirementNums, InvalidNumbersError> {
@@ -64,6 +67,10 @@ impl Board {
 
         let actual_row_nums = row_nums_parse_result.unwrap();
 
+        if actual_row_nums.iter().all(|e| *e == 0) {
+            return Err(InvalidNumbersError::new());
+        }
+
         if actual_row_nums.len() != rows.len() {
             return Err(InvalidNumbersError::new());
         }
@@ -71,7 +78,7 @@ impl Board {
         if actual_row_nums.iter().enumerate().any(|(index, row_num)| {
             rows[index]
                 .iter()
-                .filter(|e| **e == '.' || **e == '0')
+                .filter(|e| **e == '.' || (**e != '*' && (**e as u8 - '0' as u8) == *color))
                 .count()
                 < (*row_num as usize)
         }) {
@@ -82,6 +89,7 @@ impl Board {
     }
 
     pub fn parse_column_nums(
+        color: &u8,
         column_nums_string: String,
         rows: &BoardContent,
     ) -> Result<RequirementNums, InvalidNumbersError> {
@@ -96,6 +104,10 @@ impl Board {
 
         let actual_column_nums = column_nums_parse_result.unwrap();
 
+        if actual_column_nums.iter().all(|e| *e == 0) {
+            return Err(InvalidNumbersError::new());
+        }
+
         if actual_column_nums.len() != rows[0].len() {
             return Err(InvalidNumbersError::new());
         }
@@ -106,7 +118,7 @@ impl Board {
             .any(|(c_index, c_num)| {
                 rows.iter()
                     .map(|e| e[c_index])
-                    .filter(|e| *e == '.' || *e == '0')
+                    .filter(|e| *e == '.' || (*e != '*' && (*e as u8 - '0' as u8) == *color))
                     .count()
                     < (*c_num as usize)
             })
@@ -118,31 +130,73 @@ impl Board {
     }
 
     pub fn new(
-        row_nums: RequirementNums,
-        column_nums: RequirementNums,
-        state: BoardContent,
-    ) -> Board {
+        row_nums: RequirementNumsAllColors,
+        column_nums: RequirementNumsAllColors,
+        initial_board: &BoardContent,
+    ) -> Result<Board, InvalidNumbersError> {
         let mut actual_row_numbers = row_nums;
         let mut actual_column_numbers = column_nums;
-        for (r_index, row) in state.iter().enumerate() {
+
+        // Get actual rol/col requirement and check color exist
+        for (r_index, row) in initial_board.iter().enumerate() {
             for (c_index, c) in row.iter().enumerate() {
-                if *c == '0' {
-                    actual_row_numbers[r_index] -= 1;
-                    actual_column_numbers[c_index] -= 1;
+                if c.is_digit(10) {
+                    let color = (*c as u8 - '0' as u8) as usize;
+                    if color >= actual_column_numbers.len() {
+                        return Err(InvalidNumbersError::new());
+                    }
+                    actual_row_numbers[color][r_index] -= 1;
+                    actual_column_numbers[color][c_index] -= 1;
                 }
             }
         }
 
-        Board {
+        // Check column numbers valid
+        let column_count = actual_column_numbers[0].len();
+        let sum_each_column: Vec<u8> = (0..column_count)
+            .map(|i| actual_column_numbers.iter().map(|e| e[i]).sum::<u8>())
+            .collect();
+        if sum_each_column
+            .iter()
+            .enumerate()
+            .any(|(i, col_num_total)| {
+                initial_board
+                    .iter()
+                    .map(|r| r[i])
+                    .filter(|c| *c == '.')
+                    .count()
+                    < (*col_num_total) as usize
+            })
+        {
+            return Err(InvalidNumbersError::new());
+        }
+
+        //Check row numbers valid
+        let row_count = actual_row_numbers[0].len();
+        let sum_each_row: Vec<u8> = (0..row_count)
+            .map(|i| actual_row_numbers.iter().map(|e| e[i]).sum::<u8>())
+            .collect();
+        if sum_each_row
+            .iter()
+            .zip(initial_board)
+            .any(|(row_num_total, row)| {
+                row.iter().filter(|c| **c == '.').count() < (*row_num_total) as usize
+            })
+        {
+            return Err(InvalidNumbersError::new());
+        }
+
+        Ok(Board {
             row_nums: actual_row_numbers,
             column_nums: actual_column_numbers,
-            content: state,
-        }
+            content: initial_board.clone(),
+        })
     }
 
     pub fn place_block(
         &self,
         id: &char,
+        color: &u8,
         block: &BlockContent,
         (r_fill, c_fill): (usize, usize),
     ) -> Option<Board> {
@@ -165,13 +219,15 @@ impl Board {
                 }
 
                 //If specific row/column have no pixels can be fill
-                if new_row_nums[to_fill_row] <= 0 || new_column_nums[to_fill_column] <= 0 {
+                if new_row_nums[*color as usize][to_fill_row] <= 0
+                    || new_column_nums[*color as usize][to_fill_column] <= 0
+                {
                     return None;
                 }
 
                 //Change row_nums and column_nums
-                new_row_nums[to_fill_row] -= 1;
-                new_column_nums[to_fill_column] -= 1;
+                new_row_nums[*color as usize][to_fill_row] -= 1;
+                new_column_nums[*color as usize][to_fill_column] -= 1;
             }
         }
 
@@ -193,23 +249,31 @@ impl Board {
         })
     }
 
+    pub fn get_colors_count(&self) -> u8 {
+        self.column_nums.len() as u8
+    }
+
     pub fn get_contents(&self) -> &BoardContent {
         &self.content
     }
 
     pub fn get_width(&self) -> u8 {
-        self.column_nums.len() as u8
+        self.column_nums[0].len() as u8
     }
 
     pub fn get_height(&self) -> u8 {
-        self.row_nums.len() as u8
+        self.row_nums[0].len() as u8
     }
 
     pub fn is_row_all_zero(&self) -> bool {
-        self.row_nums.iter().all(|e| *e == 0)
+        self.row_nums
+            .iter()
+            .all(|color| color.iter().all(|e| *e == 0))
     }
 
     pub fn is_column_all_zero(&self) -> bool {
-        self.column_nums.iter().all(|e| *e == 0)
+        self.column_nums
+            .iter()
+            .all(|color| color.iter().all(|e| *e == 0))
     }
 }

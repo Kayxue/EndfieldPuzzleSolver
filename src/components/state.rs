@@ -17,6 +17,7 @@ impl State {
     pub fn next_state(
         &self,
         id: &char,
+        color: &u8,
         block: &BlockContent,
         position: (usize, usize),
     ) -> Option<State> {
@@ -26,7 +27,7 @@ impl State {
             return None;
         }
 
-        let board_next_state = self.current_board.place_block(id, block, position);
+        let board_next_state = self.current_board.place_block(id, color, block, position);
         if board_next_state.is_none() {
             return None;
         }
