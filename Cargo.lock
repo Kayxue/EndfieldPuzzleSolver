@@ -6,6 +6,7 @@ version = 4
 name = "EndfieldPuzzleSolver"
 version = "0.1.0"
 dependencies = [
+ "execution-time",
  "regex",
  "smallvec",
 ]
@@ -18,6 +19,12 @@ checksum = "ddd31a130427c27518df266943a5308ed92d4b226cc639f5a8f1002816174301"
 dependencies = [
  "memchr",
 ]
+
+[[package]]
+name = "execution-time"
+version = "0.3.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "71bf1ad5b4addcce54ac7bc818c8ebb1bdedac41c5dd01cef0bf9a86b655ffdc"
 
 [[package]]
 name = "memchr"

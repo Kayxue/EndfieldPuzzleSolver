@@ -1,3 +1,4 @@
+use execution_time::ExecutionTime;
 use std::io::stdin;
 
 #[cfg(target_os = "windows")]
@@ -144,25 +145,31 @@ fn main() {
         }
     }
 
+    let timer = ExecutionTime::start();
+
     let solver = Solver::new(parsed_blocks, board);
 
     solver.solve();
 
+    let elapsed_time = timer.get_elapsed_time();
+
     let result = solver.get_solution_states();
 
+    println!("----------------");
     if result.is_empty() {
         println!("There is no solution for this puzzle");
-        return;
-    }
-
-    println!("----------------");
-    for (i, solution) in solver.get_solution_states().iter().enumerate() {
-        println!("Solution {}", i + 1);
-        for r in solution.get_board().get_contents() {
-            println!("{}", String::from_iter(r));
-        }
         println!("----------------");
+    } else {
+        for (i, solution) in solver.get_solution_states().iter().enumerate() {
+            println!("Solution {}", i + 1);
+            for r in solution.get_board().get_contents() {
+                println!("{}", String::from_iter(r));
+            }
+            println!("----------------");
+        }
+        println!("Solution count: {}",result.len())
     }
+    println!("Elapsed time: {}", elapsed_time);
 
     #[cfg(target_os = "windows")]
     Command::new("cmd.exe").arg("/c").arg("pause").status().ok();
