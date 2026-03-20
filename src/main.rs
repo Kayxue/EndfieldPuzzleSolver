@@ -167,7 +167,7 @@ fn main() {
             }
             println!("----------------");
         }
-        println!("Solution count: {}",result.len())
+        println!("Solution count: {}", result.len())
     }
     println!("Elapsed time: {}", elapsed_time);
 

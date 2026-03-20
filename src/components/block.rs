@@ -75,7 +75,7 @@ impl Block {
 
         let filled_pixel_total = pixels
             .iter()
-            .map(|v| v.iter().filter(|e| **e == pixel_digit).count())
+            .map(|v| v.iter().filter(|&&e| e == pixel_digit).count())
             .sum::<usize>() as u8;
 
         let mut all_state: HashSet<BlockContent> = HashSet::new();

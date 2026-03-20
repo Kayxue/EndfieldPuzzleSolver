@@ -15,6 +15,7 @@ pub struct Board {
     row_nums: RequirementNumsAllColors,
     column_nums: RequirementNumsAllColors,
     content: BoardContent,
+    board_size: (u8, u8),
 }
 
 impl Board {
@@ -67,7 +68,7 @@ impl Board {
 
         let actual_row_nums = row_nums_parse_result.unwrap();
 
-        if actual_row_nums.iter().all(|e| *e == 0) {
+        if actual_row_nums.iter().all(|&e| e == 0) {
             return Err(InvalidNumbersError::new());
         }
 
@@ -78,7 +79,7 @@ impl Board {
         if actual_row_nums.iter().enumerate().any(|(index, row_num)| {
             rows[index]
                 .iter()
-                .filter(|e| **e == '.' || (**e != '*' && (**e as u8 - '0' as u8) == *color))
+                .filter(|&&e| e == '.' || (e != '*' && (e as u8 - '0' as u8) == *color))
                 .count()
                 < (*row_num as usize)
         }) {
@@ -118,7 +119,7 @@ impl Board {
             .any(|(c_index, c_num)| {
                 rows.iter()
                     .map(|e| e[c_index])
-                    .filter(|e| *e == '.' || (*e != '*' && (*e as u8 - '0' as u8) == *color))
+                    .filter(|&e| e == '.' || (e != '*' && (e as u8 - '0' as u8) == *color))
                     .count()
                     < (*c_num as usize)
             })
@@ -163,7 +164,7 @@ impl Board {
                 initial_board
                     .iter()
                     .map(|r| r[i])
-                    .filter(|c| *c == '.')
+                    .filter(|&c| c == '.')
                     .count()
                     < (*col_num_total) as usize
             })
@@ -180,7 +181,7 @@ impl Board {
             .iter()
             .zip(initial_board)
             .any(|(row_num_total, row)| {
-                row.iter().filter(|c| **c == '.').count() < (*row_num_total) as usize
+                row.iter().filter(|&&c| c == '.').count() < (*row_num_total) as usize
             })
         {
             return Err(InvalidNumbersError::new());
@@ -190,6 +191,7 @@ impl Board {
             row_nums: actual_row_numbers,
             column_nums: actual_column_numbers,
             content: initial_board.clone(),
+            board_size: (row_count as u8, column_count as u8),
         })
     }
 
@@ -246,6 +248,7 @@ impl Board {
             row_nums: new_row_nums,
             column_nums: new_column_nums,
             content: placed_board,
+            board_size: self.board_size,
         })
     }
 
@@ -257,23 +260,19 @@ impl Board {
         &self.content
     }
 
-    pub fn get_width(&self) -> u8 {
-        self.column_nums[0].len() as u8
-    }
-
-    pub fn get_height(&self) -> u8 {
-        self.row_nums[0].len() as u8
+    pub fn get_size(&self) -> (u8, u8) {
+        self.board_size
     }
 
     pub fn is_row_all_zero(&self) -> bool {
         self.row_nums
             .iter()
-            .all(|color| color.iter().all(|e| *e == 0))
+            .all(|color| color.iter().all(|&e| e == 0))
     }
 
     pub fn is_column_all_zero(&self) -> bool {
         self.column_nums
             .iter()
-            .all(|color| color.iter().all(|e| *e == 0))
+            .all(|color| color.iter().all(|&e| e == 0))
     }
 }

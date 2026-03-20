@@ -15,12 +15,10 @@ pub struct Solver {
     blocks: BlockVec,
     states: RefCell<VecDeque<State>>,
     solutions: RefCell<HashSet<State>>,
-    board_size: (u8, u8),
 }
 
 impl Solver {
     pub fn new(blocks: BlockVec, initial_board: Board) -> Solver {
-        let board_size = (initial_board.get_height(), initial_board.get_width());
         let initial_state = State::new(initial_board);
         let initial_states = VecDeque::from([initial_state]);
         let mut blocks_sorted = SmallVec::from(blocks);
@@ -32,7 +30,6 @@ impl Solver {
             blocks: blocks_sorted,
             states: RefCell::from(initial_states),
             solutions: RefCell::from(HashSet::new()),
-            board_size,
         }
     }
 
@@ -62,12 +59,13 @@ impl Solver {
                     continue;
                 }
                 for block_state in block_instance.get_block_rotate_state() {
-                    for r_index in 0..self.board_size.0 {
-                        if r_index + (block_state.len() - 1) as u8 >= self.board_size.0 {
+                    let (board_height, board_width) = cur_state.get_board().get_size();
+                    for r_index in 0..board_height {
+                        if r_index + (block_state.len() - 1) as u8 >= board_height {
                             break;
                         }
-                        for c_index in 0..self.board_size.1 {
-                            if c_index + (block_state[0].len() - 1) as u8 >= self.board_size.1 {
+                        for c_index in 0..board_width {
+                            if c_index + (block_state[0].len() - 1) as u8 >= board_width {
                                 break;
                             }
 
