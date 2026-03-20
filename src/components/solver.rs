@@ -38,6 +38,7 @@ impl Solver {
             return;
         }
 
+        let (board_height, board_width) = self.states.borrow().front().unwrap().get_board().get_size();
         let mut state = self.states.borrow_mut();
         let mut solution_states = self.solutions.borrow_mut();
         let mut already_visited: HashSet<State> = HashSet::new();
@@ -52,14 +53,13 @@ impl Solver {
 
             if already_visited.contains(&cur_state) {
                 continue;
-            }
+            }   
 
             for block_instance in &self.blocks {
                 if cur_state.is_block_used(block_instance.get_id()) {
                     continue;
                 }
                 for block_state in block_instance.get_block_rotate_state() {
-                    let (board_height, board_width) = cur_state.get_board().get_size();
                     for r_index in 0..board_height {
                         if r_index + (block_state.len() - 1) as u8 >= board_height {
                             break;
@@ -102,7 +102,7 @@ impl Solver {
             .sum();
         let board_empty_pixels_total: u8 = first_state_board_content
             .iter()
-            .map(|r| r.iter().filter(|c| **c == '.').count())
+            .map(|r| r.iter().filter(|&&c| c == '.').count())
             .sum::<usize>() as u8;
 
         // Check color requirement rows for all block colors exist
