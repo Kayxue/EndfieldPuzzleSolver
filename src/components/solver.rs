@@ -39,9 +39,10 @@ impl Solver {
         }
 
         let mut state = self.states.borrow_mut();
-        let (board_height, board_width) = state.front().unwrap().get_board().get_size();
         let mut solution_states = self.solutions.borrow_mut();
         let mut already_visited: HashSet<State> = HashSet::new();
+
+        let (board_height, board_width) = state.front().unwrap().get_board().get_size();
 
         while !state.is_empty() {
             let cur_state = state.pop_front().unwrap();
