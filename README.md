@@ -114,32 +114,32 @@ Puzzle solver for solving Originium Circuitry puzzles in Arknights: Endfield gam
 > ```
 > ----------------
 > Solution 1
-> .DDC.
-> DDCCC
-> DA0CB
-> AAABB
-> .ABB.
+> .BBA.
+> BBAAA
+> BC0AD
+> CCCDD
+> .CDD.
 > ----------------
 > Solution 2
-> .ABB.
-> AAABB
-> DA0CB
-> DDCCC
-> .DDC.
-> ----------------
-> Solution 3
-> .BBC.
-> BBCCC
-> BA0CD
-> AAADD
-> .ADD.
-> ----------------
-> Solution 4
 > .CBB.
 > CCCBB
 > DC0AB
 > DDAAA
 > .DDA.
+> ----------------
+> Solution 3
+> .ABB.
+> AAABB
+> DA0CB
+> DDCCC
+> .DDC.
+> ----------------
+> Solution 4
+> .DDA.
+> DDAAA
+> DC0AB
+> CCCBB
+> .CBB.
 > ----------------
 > Solution 5
 > .ADD.
@@ -149,28 +149,28 @@ Puzzle solver for solving Originium Circuitry puzzles in Arknights: Endfield gam
 > .BBC.
 > ----------------
 > Solution 6
-> .CDD.
-> CCCDD
-> BC0AD
-> BBAAA
-> .BBA.
+> .BBC.
+> BBCCC
+> BA0CD
+> AAADD
+> .ADD.
 > ----------------
 > Solution 7
-> .DDA.
-> DDAAA
-> DC0AB
-> CCCBB
-> .CBB.
+> .DDC.
+> DDCCC
+> DA0CB
+> AAABB
+> .ABB.
 > ----------------
 > Solution 8
-> .BBA.
-> BBAAA
-> BC0AD
-> CCCDD
 > .CDD.
+> CCCDD
+> BC0AD
+> BBAAA
+> .BBA.
 > ----------------
 > Solution count: 8
-> Elapsed time: 0.001453 second (1.452625ms)
+> Elapsed time: 0.001786 second (1.785583ms)
 > ```
 
 ### Example 2
@@ -277,18 +277,18 @@ Puzzle solver for solving Originium Circuitry puzzles in Arknights: Endfield gam
 > ```
 > ----------------
 > Solution 1
-> AAAC.
-> ABCCC
-> BBB..
-> DD.*.
-> .D..*
-> ----------------
-> Solution 2
 > CAAD.
 > CCADD
 > CBA..
 > BB.*.
 > .B..*
+> ----------------
+> Solution 2
+> AAAB.
+> ACBBB
+> CCC..
+> DD.*.
+> .D..*
 > ----------------
 > Solution 3
 > BAAD.
@@ -298,14 +298,14 @@ Puzzle solver for solving Originium Circuitry puzzles in Arknights: Endfield gam
 > .C..*
 > ----------------
 > Solution 4
-> AAAB.
-> ACBBB
-> CCC..
+> AAAC.
+> ABCCC
+> BBB..
 > DD.*.
 > .D..*
 > ----------------
 > Solution count: 4
-> Elapsed time: 0.025131 second (25.130875ms)
+> Elapsed time: 0.026943 second (26.942959ms)
 > ```
 
 ### Example 3
@@ -469,7 +469,7 @@ Puzzle solver for solving Originium Circuitry puzzles in Arknights: Endfield gam
 > BBFCC
 > ----------------
 > Solution count: 2
-> Elapsed time: 0.137151 second (137.150958ms)
+> Elapsed time: 0.149629 second (149.629ms)
 > ```
 
 ## Contribution
