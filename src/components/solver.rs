@@ -38,8 +38,8 @@ impl Solver {
             return;
         }
 
-        let (board_height, board_width) = self.states.borrow().front().unwrap().get_board().get_size();
         let mut state = self.states.borrow_mut();
+        let (board_height, board_width) = state.front().unwrap().get_board().get_size();
         let mut solution_states = self.solutions.borrow_mut();
         let mut already_visited: HashSet<State> = HashSet::new();
 
@@ -53,7 +53,7 @@ impl Solver {
 
             if already_visited.contains(&cur_state) {
                 continue;
-            }   
+            }
 
             for block_instance in &self.blocks {
                 if cur_state.is_block_used(block_instance.get_id()) {
