@@ -92,19 +92,8 @@ impl Solver {
     fn solvable(&self) -> bool {
         let state = self.states.borrow();
 
-        // Check empty cell is enough
         let first_state_board = state.front().unwrap().get_board();
         let first_state_board_content = first_state_board.get_contents();
-
-        let block_pixel_total: u8 = self
-            .blocks
-            .iter()
-            .map(|e| e.get_filled_pixels_count())
-            .sum();
-        let board_empty_pixels_total: u8 = first_state_board_content
-            .iter()
-            .map(|r| r.iter().filter(|&&c| c == '.').count())
-            .sum::<usize>() as u8;
 
         // Check color requirement rows for all block colors exist
         if self
@@ -114,6 +103,17 @@ impl Solver {
         {
             return false;
         }
+        
+        // Check empty cell is enough
+        let block_pixel_total: u8 = self
+            .blocks
+            .iter()
+            .map(|e| e.get_filled_pixels_count())
+            .sum();
+        let board_empty_pixels_total: u8 = first_state_board_content
+            .iter()
+            .map(|r| r.iter().filter(|&&c| c == '.').count())
+            .sum::<usize>() as u8;
 
         block_pixel_total <= board_empty_pixels_total
     }
