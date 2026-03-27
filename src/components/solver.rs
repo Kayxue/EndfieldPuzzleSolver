@@ -103,7 +103,7 @@ impl Solver {
         {
             return false;
         }
-        
+
         // Check empty cell is enough
         let block_pixel_total: u8 = self
             .blocks
