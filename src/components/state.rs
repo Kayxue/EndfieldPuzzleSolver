@@ -27,16 +27,13 @@ impl State {
             return None;
         }
 
-        let board_next_state = self.current_board.place_block(id, color, block, position);
-        if board_next_state.is_none() {
-            return None;
-        }
+        let board_next_state = self.current_board.place_block(id, color, block, position)?;
 
         let block_used_next_state = self.block_used | (1 << block_used);
 
         Some(State {
             block_used: block_used_next_state,
-            current_board: board_next_state.unwrap(),
+            current_board: board_next_state,
         })
     }
 

@@ -21,7 +21,7 @@ pub struct Board {
 impl Board {
     pub fn parse_board(rows: &StringInputs) -> Result<BoardContent, InvalidBoardError> {
         if rows.is_empty() {
-            return Err(InvalidBoardError::new());
+            return Err(InvalidBoardError);
         }
 
         // Check input has invalid character
@@ -30,7 +30,7 @@ impl Board {
             .find(|e| e.chars().any(|c| c != '.' && !c.is_digit(10) && c != '*') || e.is_empty())
             .is_some()
         {
-            return Err(InvalidBoardError::new());
+            return Err(InvalidBoardError);
         }
 
         // Check whether input is a matrix
@@ -44,7 +44,7 @@ impl Board {
             }
             acc
         }) {
-            return Err(InvalidBoardError::new());
+            return Err(InvalidBoardError);
         }
 
         let result = rows.iter().map(|e| e.chars().collect()).collect();
@@ -57,23 +57,18 @@ impl Board {
         row_nums_string: String,
         rows: &BoardContent,
     ) -> Result<RequirementNums, InvalidNumbersError> {
-        let row_nums_parse_result: Result<RequirementNums, _> = SPLIT_REGEX
+        let actual_row_nums: RequirementNums = SPLIT_REGEX
             .split(&row_nums_string)
             .map(|e| e.parse())
-            .collect();
-
-        if row_nums_parse_result.is_err() {
-            return Err(InvalidNumbersError::new());
-        }
-
-        let actual_row_nums = row_nums_parse_result.unwrap();
+            .collect::<Result<_, _>>()
+            .map_err(|_| InvalidNumbersError)?;
 
         if actual_row_nums.iter().all(|&e| e == 0) {
-            return Err(InvalidNumbersError::new());
+            return Err(InvalidNumbersError);
         }
 
         if actual_row_nums.len() != rows.len() {
-            return Err(InvalidNumbersError::new());
+            return Err(InvalidNumbersError);
         }
 
         if actual_row_nums.iter().enumerate().any(|(index, row_num)| {
@@ -83,7 +78,7 @@ impl Board {
                 .count()
                 < (*row_num as usize)
         }) {
-            return Err(InvalidNumbersError::new());
+            return Err(InvalidNumbersError);
         }
 
         Ok(actual_row_nums)
@@ -100,17 +95,17 @@ impl Board {
             .collect();
 
         if column_nums_parse_result.is_err() {
-            return Err(InvalidNumbersError::new());
+            return Err(InvalidNumbersError);
         }
 
         let actual_column_nums = column_nums_parse_result.unwrap();
 
         if actual_column_nums.iter().all(|e| *e == 0) {
-            return Err(InvalidNumbersError::new());
+            return Err(InvalidNumbersError);
         }
 
         if actual_column_nums.len() != rows[0].len() {
-            return Err(InvalidNumbersError::new());
+            return Err(InvalidNumbersError);
         }
 
         if actual_column_nums
@@ -124,7 +119,7 @@ impl Board {
                     < (*c_num as usize)
             })
         {
-            return Err(InvalidNumbersError::new());
+            return Err(InvalidNumbersError);
         }
 
         Ok(actual_column_nums)
@@ -144,7 +139,7 @@ impl Board {
                 if c.is_digit(10) {
                     let color = (*c as u8 - '0' as u8) as usize;
                     if color >= actual_column_numbers.len() {
-                        return Err(InvalidNumbersError::new());
+                        return Err(InvalidNumbersError);
                     }
                     actual_row_numbers[color][r_index] -= 1;
                     actual_column_numbers[color][c_index] -= 1;
@@ -169,7 +164,7 @@ impl Board {
                     < (*col_num_total) as usize
             })
         {
-            return Err(InvalidNumbersError::new());
+            return Err(InvalidNumbersError);
         }
 
         //Check row numbers valid
@@ -184,7 +179,7 @@ impl Board {
                 row.iter().filter(|&&c| c == '.').count() < (*row_num_total) as usize
             })
         {
-            return Err(InvalidNumbersError::new());
+            return Err(InvalidNumbersError);
         }
 
         Ok(Board {

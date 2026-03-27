@@ -17,7 +17,7 @@ impl Block {
     pub fn new(id: char, rows: StringInputs) -> Result<Block, InvalidBlockError> {
         // Empty Block
         if rows.is_empty() {
-            return Err(InvalidBlockError::new());
+            return Err(InvalidBlockError);
         }
 
         // Check invalid symbols
@@ -34,7 +34,7 @@ impl Block {
             })
             .is_some()
         {
-            return Err(InvalidBlockError::new());
+            return Err(InvalidBlockError);
         }
 
         //Check block pixels contain only one number
@@ -49,7 +49,7 @@ impl Block {
             })
             .is_some()
         {
-            return Err(InvalidBlockError::new());
+            return Err(InvalidBlockError);
         }
 
         let pixel_digit = rows[0].chars().find(|e| e.is_digit(10)).unwrap();
